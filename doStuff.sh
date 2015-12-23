@@ -1,5 +1,6 @@
 #! /bin/bash
 
+APT="sudo apt-get update"
 function doBasic(){
 	cd ~
 	ls /media/dumps/linux-setups >&/dev/null
@@ -23,7 +24,7 @@ function addRep(){
 
 function fixSources(){
 	sudo sed -i /etc/sources.list 's/jessie/stable/g'
-	APT
+	$APT
 }
 
 function errCheck(){
@@ -55,32 +56,32 @@ function main(){
 		fixSources
 		installBasic
 		addVertexRepo
-		APT
+		$APT
 		sudo apt-get -y install ceti-2-theme vertex-theme arc-theme
 		getFonts
 		addRep "ppa:numix/ppa"
 		addRep "ppa:no1wantdthisname/ppa"
-		APT
+		$APT
 		sudo apt-get -y install numix-icon-theme-circle fontconfig-infinality gnome-tweak-tool
 	elif [[ $1 -eq 2 ]];then
 		read -p "install gnome?(y/n)" resp
-		if [[ $resp == "y" ]]; then
-			echo 'APT::Install-Recommends "false";'|sudo tee -a /etc/apt/apt.conf >/dev/null
-			APT
+		if [[ $resp = "y" ]]; then
+			echo 'APT::Install-Recommends "false";'|sudo tee /etc/apt/apt.conf >/dev/null
+			$APT
 			sudo apt-get install xserver-xorg-input-synaptics xserver-xorg-video-intel gnome-session xorg nautilus gnome-terminal gnome-control-center gnome-tweak-tool alsa-utils pulseaudio gnome-themes gdm3 nautilus gksu gdebi file-roller unzip unrar
 		fi
 	elif [[ $1 -eq 3 ]];then
-		APT
+		$APT
 		wget http://font.ubuntu.com/download/ubuntu-font-family-0.83.zip
 		unzip ubuntu-font-family-0.83.zip
 		sudo mv ubuntu-font-family-0.83 /usr/share/fonts/
 		sudo fc-cache -fv
 		arch=$(uname -m)
 		if [[ ! -e /usr/bin/google-chrome ]];then
-			if [[ $arch == "i686" -o $arch == "i386" ]]; then
+			if [[ $arch = "i686" || $arch = "i386" ]]; then
 				wget https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb
 				sudo dpkg -i google-chrome-stable_current_i386.deb
-			elif [[ $arch == "x86_64" ]]; then
+			elif [[ $arch = "x86_64" ]]; then
 				wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 				sudo dpkg -i google-chrome-stable_current_amd64.deb
 			fi
@@ -94,4 +95,5 @@ function main(){
 	fi
 }
 
+source ~/.bashrc
 main $@
